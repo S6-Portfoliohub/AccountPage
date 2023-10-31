@@ -12,7 +12,7 @@ namespace DAL.DAO
 
         public ProjectDAL()
         {
-            string connectionUri = "mongodb+srv://tjerkzeil:<password>@portfoliohubcluster.d8rmxk5.mongodb.net/?retryWrites=true&w=majority";
+            string connectionUri = "";
             var settings = MongoClientSettings.FromConnectionString(connectionUri);
             // Set the ServerApi field of the settings object to Stable API version 1
             settings.ServerApi = new ServerApi(ServerApiVersion.V1);
