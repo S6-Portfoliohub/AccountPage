@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using DAL.DAO;
 
 namespace AccountPage.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProjectController : Controller
+    public class ProjectController : ControllerBase
     {
-        [HttpGet(Name = "GetWeatherForecast")]
-        public async Task<IActionResult> GetAllProjectsFromUser()
+        [HttpGet(Name = "GetAllProjectsFromUser")]
+        public async Task<IActionResult> GetAllProjectsFromUser(string userId)
         {
+            ProjectDAL projectDAL = new();
+            projectDAL.GetAllProjectsFromUser(userId);
             return Ok();
         }
     }

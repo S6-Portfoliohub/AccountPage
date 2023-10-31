@@ -2,9 +2,9 @@
 {
     public class ProjectViewModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public List<AchievementViewModel>? Achievements { get; set; }
+        public required int Id { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public string? Img {  get; set; }
     }
 }

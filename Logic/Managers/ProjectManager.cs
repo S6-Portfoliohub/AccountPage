@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Logic.Models
+namespace Logic.Managers
 {
-    public class ProjectManager
+    internal class ProjectManager
     {
     }
 }

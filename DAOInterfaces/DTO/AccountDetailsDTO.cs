@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace DAOInterfaces.DTO
 {
-    public class AchievementDTO
+    public class AccountDetailsDTO
     {
+        public required string Id { get; set; }
+        public required string UserName { get; set; }
     }
 }
