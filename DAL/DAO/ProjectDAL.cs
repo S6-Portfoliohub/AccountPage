@@ -1,55 +1,44 @@
 ﻿using DAOInterfaces.DTO;
 using DAOInterfaces.Interfaces;
-using MongoDB.Bson;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace DAL.DAO
 {
     public class ProjectDAL : IProjectDAL
     {
-        private readonly IMongoClient _client;
-        private readonly IMongoDatabase _database;
+        private readonly IMongoCollection<ProjectDTO> _projectCollection;
 
-        public ProjectDAL()
+        public ProjectDAL(IOptions<ProjectDatabaseSettings> projectDatabaseSettings)
         {
-            string connectionUri = "";
-            var settings = MongoClientSettings.FromConnectionString(connectionUri);
-            // Set the ServerApi field of the settings object to Stable API version 1
-            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
-            // Create a new client and connect to the server
-            var client = new MongoClient(settings);
-            _client = client;
-            _database = client.GetDatabase("PortfolioHubCluster");
+            var mongoClient = new MongoClient(
+            projectDatabaseSettings.Value.ConnectionString);
+
+            var mongoDatabase = mongoClient.GetDatabase(
+                projectDatabaseSettings.Value.DatabaseName);
+
+            _projectCollection = mongoDatabase.GetCollection<ProjectDTO>(
+                projectDatabaseSettings.Value.ProjectCollectionName);
         }
 
-        public Task<List<ProjectDTO>> GetAllProjectsFromUser(string userId)
+        public async Task<List<ProjectDTO>> GetAllProjectsFromUser(string userId)
         {
-            throw new NotImplementedException();
-            try
-            {
-                var result = _client.GetDatabase("admin").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
-                Console.WriteLine("Pinged your deployment. You successfully connected to MongoDB!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            return await _projectCollection.Find(x => x.UserId == userId).ToListAsync();
         }
 
-        public Task AddProjectForUser(ProjectDTO projectDTO)
+        public async Task AddProjectForUser(ProjectDTO projectDTO)
         {
-            var collection = _database.GetCollection<BsonDocument>("Projects");
-            return collection.InsertOneAsync(projectDTO.ToBsonDocument());
+            await _projectCollection.InsertOneAsync(projectDTO);
         }
 
-        public async Task EditProjectForUser(ProjectDTO projectDTO)
+        public async Task UpdateProjectForUser(ProjectDTO projectDTO)
         {
-
+            await _projectCollection.ReplaceOneAsync(x => x.Id == projectDTO.Id, projectDTO);
         }
 
         public async Task DeleteProjectFromUser(string projectId)
         {
-
+            await _projectCollection.DeleteOneAsync(x => x.Id == projectId);
         }
     }
 }

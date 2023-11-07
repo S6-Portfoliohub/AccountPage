@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AccountPage.Models;
 using DAL.DAO;
-using AccountPage.Models;
-using System.Xml.Linq;
+using DAOInterfaces.DTO;
+using DAOInterfaces.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AccountPage.Controllers
 {
@@ -9,18 +10,27 @@ namespace AccountPage.Controllers
     [Route("api/[controller]")]
     public class ProjectController : ControllerBase
     {
+        private readonly IProjectDAL _projectDAL;
+
+        public ProjectController(IProjectDAL projectDAL)
+        {
+            _projectDAL = projectDAL;
+        }
+
         [HttpGet("{userId}")]
         public async Task<ActionResult<List<ProjectViewModel>>> GetAllProjectsFromUser(string userId)
         {
-            //ProjectDAL projectDAL = new();
-            //await projectDAL.GetAllProjectsFromUser(userId);
-            List<ProjectViewModel> project = new()
-            {
-                new() { Id = "test", Name = "test", Description = "test", Img = "test.png" },
-                new() { Id = "test1", Name = "test1", Description = "test1", Img = "test1.png" }
-            };
+            List<ProjectDTO> projectDTOs = await _projectDAL.GetAllProjectsFromUser(userId);
+            List<ProjectViewModel> project = projectDTOs.Select(x => new ProjectViewModel() { Id = x.Id, Description = x.Description, Name = x.Name, Img = x.Img }).ToList();
 
             return project;
+        }
+
+        [HttpPost("{userId}")]
+        public async Task<ActionResult> CreateProject(ProjectViewModel project)
+        {
+            await _projectDAL.AddProjectForUser(new() { Name = project.Name, Description = project.Description, UserId = "test"});
+            return Ok();
         }
     }
 }
