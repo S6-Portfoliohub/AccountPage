@@ -2,6 +2,7 @@ using DAL;
 using DAL.DAO;
 using DAOInterfaces.Interfaces;
 using Logic.Managers;
+using MessagingLayer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.Configure<ProjectDatabaseSettings>(
 
 builder.Services.AddScoped<IProjectDAL, ProjectDAL>();
 builder.Services.AddScoped<IProjectManager, ProjectManager>();
+
+//RabbitMQ consumer
+builder.Services.AddHostedService<RMQBackgroundService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

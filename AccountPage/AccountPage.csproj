@@ -20,6 +20,7 @@
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\DAOInterfaces\DAOInterfaces.csproj" />
     <ProjectReference Include="..\Logic\Logic.csproj" />
+    <ProjectReference Include="..\MessagingLayer\MessagingLayer.csproj" />
   </ItemGroup>
 
 </Project>

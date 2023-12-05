@@ -22,7 +22,7 @@ namespace Logic.Managers
 
         public async Task CreateProject(ProjectModel project)
         {
-            await _projectDAL.AddProjectForUser(new() { Name = project.Name, Description = project.Description, UserId = project.UserId });
+            await _projectDAL.AddProjectForUser(new() { Name = project.Name, Description = project.Description, UserId = project.UserId, Img = project.Img });
         }
     }
 }
