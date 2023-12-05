@@ -1,7 +1,6 @@
 ﻿using AccountPage.Models;
-using DAL.DAO;
-using DAOInterfaces.DTO;
-using DAOInterfaces.Interfaces;
+using Logic.Managers;
+using Logic.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountPage.Controllers
@@ -10,17 +9,17 @@ namespace AccountPage.Controllers
     [Route("api/[controller]")]
     public class ProjectController : ControllerBase
     {
-        private readonly IProjectDAL _projectDAL;
+        private readonly IProjectManager _projectManager;
 
-        public ProjectController(IProjectDAL projectDAL)
+        public ProjectController(IProjectManager projectManager)
         {
-            _projectDAL = projectDAL;
+            _projectManager = projectManager;
         }
 
         [HttpGet("{userId}")]
         public async Task<ActionResult<List<ProjectViewModel>>> GetAllProjectsFromUser(string userId)
         {
-            List<ProjectDTO> projectDTOs = await _projectDAL.GetAllProjectsFromUser(userId);
+            List<ProjectModel> projectDTOs = await _projectManager.GetAllProjectsFromUser(userId);
             List<ProjectViewModel> project = projectDTOs.Select(x => new ProjectViewModel() { Id = x.Id, Description = x.Description, Name = x.Name, Img = x.Img }).ToList();
 
             return project;
@@ -29,7 +28,7 @@ namespace AccountPage.Controllers
         [HttpPost("{userId}")]
         public async Task<ActionResult> CreateProject(ProjectViewModel project)
         {
-            await _projectDAL.AddProjectForUser(new() { Name = project.Name, Description = project.Description, UserId = "test"});
+            await _projectManager.CreateProject(new() { Name = project.Name, Description = project.Description, UserId = "test", Img = project.Img });
             return Ok();
         }
     }

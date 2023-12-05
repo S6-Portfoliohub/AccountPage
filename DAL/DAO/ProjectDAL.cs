@@ -19,6 +19,8 @@ namespace DAL.DAO
 
             _projectCollection = mongoDatabase.GetCollection<ProjectDTO>(
                 projectDatabaseSettings.Value.ProjectCollectionName);
+
+            string test = "mongodb://localhost:27017/";
         }
 
         public async Task<List<ProjectDTO>> GetAllProjectsFromUser(string userId)
