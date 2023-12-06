@@ -1,4 +1,6 @@
 ﻿using Logic.Managers;
+using MessagingLayer.Helper;
+using MessagingLayer.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
@@ -29,27 +31,28 @@ namespace MessagingLayer
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var consumer = new EventingBasicConsumer(_channel);
-            while (!stoppingToken.IsCancellationRequested)
+            consumer.Received += async (model, ea) =>
             {
-                consumer.Received += async (model, ea) =>
-                {
-                    // Handle the received message
-                    byte[] body = ea.Body.ToArray();
-                    string? message = Encoding.UTF8.GetString(body);
-                    await CreateProject();
-                    Console.WriteLine($"Received message: {message}");
-                };
+                // Handle the received message
+                byte[] body = ea.Body.ToArray();
+                string? message = Encoding.UTF8.GetString(body);
 
-                _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
-            }
+                //create new project
+                await CreateProject(SerializeMessagesHelper.SerializeProject(message));
+                Console.WriteLine($"Received message: {message}");
+            };
+
+            _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+            
             return Task.CompletedTask;
         }
 
-        private async Task CreateProject()
+        private async Task CreateProject(ProjectMessageModel projectMessage)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var context = scope.ServiceProvider.GetService<IProjectManager>();
+                IProjectManager? projectManager = scope.ServiceProvider.GetService<IProjectManager>();
+                await projectManager.CreateProject(new() { Description = projectMessage.Description, Name = projectMessage.Name, UserId = projectMessage.UserID, Img = projectMessage.Img });
             }
         }
     }
