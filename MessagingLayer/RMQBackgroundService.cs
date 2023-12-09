@@ -3,6 +3,7 @@ using MessagingLayer.Helper;
 using MessagingLayer.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -17,10 +18,10 @@ namespace MessagingLayer
 
         private readonly IServiceProvider _serviceProvider;
 
-        public RMQBackgroundService(IServiceProvider serviceProvider)
+        public RMQBackgroundService(IServiceProvider serviceProvider, IOptions<RabbitMqSettings> rabbitMqSettings)
         {
             // Initialize your RabbitMQ connection and channel
-            ConnectionFactory factory = new ConnectionFactory() { HostName = "localhost" };
+            ConnectionFactory factory = new ConnectionFactory() { HostName = rabbitMqSettings.Value.HostName };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);

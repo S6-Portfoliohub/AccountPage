@@ -10,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ProjectDatabaseSettings>(
     builder.Configuration.GetSection("PortfolioHubDatabase"));
 
+builder.Services.Configure<RabbitMqSettings>(
+    builder.Configuration.GetSection("RabbitMq"));
+
 builder.Services.AddScoped<IProjectDAL, ProjectDAL>();
 builder.Services.AddScoped<IProjectManager, ProjectManager>();
 
