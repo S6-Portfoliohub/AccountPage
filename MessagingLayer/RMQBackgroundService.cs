@@ -21,7 +21,7 @@ namespace MessagingLayer
         public RMQBackgroundService(IServiceProvider serviceProvider, IOptions<RabbitMqSettings> rabbitMqSettings)
         {
             // Initialize your RabbitMQ connection and channel
-            ConnectionFactory factory = new ConnectionFactory() { HostName = rabbitMqSettings.Value.HostName };
+            ConnectionFactory factory = new ConnectionFactory() { HostName = rabbitMqSettings.Value.HostName, UserName = rabbitMqSettings.Value.UserName, Password = rabbitMqSettings.Value.Password};
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
