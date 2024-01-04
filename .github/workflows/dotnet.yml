@@ -42,7 +42,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       
   sonarcloud:
-    name: Build and analyze
+    name: analyze sonarcloud
     runs-on: windows-latest
     steps:
       - name: Set up JDK 17
@@ -81,7 +81,16 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"S6-Portfoliohub_AccountPage" /o:"s6-portfoliohub" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-      
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
