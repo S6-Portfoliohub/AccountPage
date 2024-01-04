@@ -94,6 +94,8 @@ jobs:
         uses: snyk/actions/dotnet@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=./AccountPage/YourProjectFile.csproj
       
 
   push_to_registry:
