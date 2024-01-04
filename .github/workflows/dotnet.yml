@@ -91,7 +91,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --file=./AccountPage/AccountPage.csproj
+          args: --all-projects
 
   push_to_registry:
     name: Push Docker image to Docker Hub
