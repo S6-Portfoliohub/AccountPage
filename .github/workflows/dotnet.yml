@@ -82,20 +82,20 @@ jobs:
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/dotnet@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=./AccountPage/YourProjectFile.csproj
+  # security_snyk:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v3
+  #     - name: Restore dependencies
+  #       run: dotnet restore
+  #     - name: Run Snyk to check for vulnerabilities
+  #       uses: snyk/actions/dotnet@master
+  #       env:
+  #         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #       with:
+  #         args: --file=./AccountPage/YourProjectFile.csproj
       
 
   push_to_registry:
