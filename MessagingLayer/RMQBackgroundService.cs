@@ -13,8 +13,10 @@ namespace MessagingLayer
     public class RMQBackgroundService : BackgroundService
     {
         private readonly IConnection _connection;
-        private readonly IModel _channel;
-        private readonly string _queueName = "hello";
+        private readonly IModel _channelCreate;
+        private readonly IModel _channelDelete;
+        private readonly string _queueNameCreate = "hello";
+        private readonly string _queueDelete = "delete";
 
         private readonly IServiceProvider _serviceProvider;
 
@@ -23,15 +25,19 @@ namespace MessagingLayer
             // Initialize your RabbitMQ connection and channel
             ConnectionFactory factory = new ConnectionFactory() { HostName = rabbitMqSettings.Value.HostName, UserName = rabbitMqSettings.Value.UserName, Password = rabbitMqSettings.Value.Password};
             _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            _channelCreate = _connection.CreateModel();
+            _channelDelete = _connection.CreateModel();
+
+            _channelCreate.QueueDeclare(queue: _queueNameCreate, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            _channelDelete.QueueDeclare(queue: _queueDelete, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            
 
             // Project manager for Crud operations
             _serviceProvider = serviceProvider;
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var consumer = new EventingBasicConsumer(_channel);
+            var consumer = new EventingBasicConsumer(_channelCreate);
             consumer.Received += async (model, ea) =>
             {
                 // Handle the received message
@@ -43,7 +49,21 @@ namespace MessagingLayer
                 Console.WriteLine($"Received message: {message}");
             };
 
-            _channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+            var consumerDelete = new EventingBasicConsumer(_channelDelete);
+            consumerDelete.Received += async (model, ea) =>
+            {
+                // Handle the received message
+                byte[] body = ea.Body.ToArray();
+                string? message = Encoding.UTF8.GetString(body);
+                message = message.Replace("\"", "");
+
+                //delete user
+                await DeleteUser(message);
+                Console.WriteLine($"Received message: {message}");
+            };
+
+            _channelCreate.BasicConsume(queue: _queueNameCreate, autoAck: true, consumer: consumer);
+            _channelDelete.BasicConsume(queue: _queueDelete, autoAck: true, consumer: consumerDelete);
             
             return Task.CompletedTask;
         }
@@ -54,6 +74,15 @@ namespace MessagingLayer
             {
                 IProjectManager? projectManager = scope.ServiceProvider.GetService<IProjectManager>();
                 await projectManager.CreateProject(new() { Description = projectMessage.Description, Name = projectMessage.Name, UserId = projectMessage.UserID, Img = projectMessage.Img });
+            }
+        }
+
+        private async Task DeleteUser(string userId)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                IProjectManager? projectManager = scope.ServiceProvider.GetService<IProjectManager>();
+                await projectManager.DeleteUser(userId);
             }
         }
     }

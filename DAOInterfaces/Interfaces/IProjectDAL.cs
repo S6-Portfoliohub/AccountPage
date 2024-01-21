@@ -31,5 +31,13 @@ namespace DAOInterfaces.Interfaces
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task DeleteProjectFromUser(string projectId);
+
+        /// <summary>
+        /// Deletes all projects from a user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task DeleteUser(string userId);
+
     }
 }

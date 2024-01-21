@@ -24,5 +24,10 @@ namespace Logic.Managers
         {
             await _projectDAL.AddProjectForUser(new() { Name = project.Name, Description = project.Description, UserId = project.UserId, Img = project.Img });
         }
+
+        public async Task DeleteUser(string userId)
+        {
+            await _projectDAL.DeleteUser(userId);
+        }
     }
 }

@@ -3,6 +3,7 @@ using DAL.DAO;
 using DAOInterfaces.Interfaces;
 using Logic.Managers;
 using MessagingLayer;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,5 +37,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.Run();

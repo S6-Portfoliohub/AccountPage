@@ -40,5 +40,10 @@ namespace DAL.DAO
         {
             await _projectCollection.DeleteOneAsync(x => x.Id == projectId);
         }
+
+        public async Task DeleteUser(string userId)
+        {
+            await _projectCollection.DeleteManyAsync(x => x.UserId == userId);
+        }
     }
 }

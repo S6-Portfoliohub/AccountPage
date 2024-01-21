@@ -31,5 +31,12 @@ namespace AccountPage.Controllers
             await _projectManager.CreateProject(new() { Name = project.Name, Description = project.Description, UserId = "test", Img = project.Img });
             return Ok();
         }
+
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> DeleteUser(string userId)
+        {
+            await _projectManager.DeleteUser(userId);
+            return Ok();
+        }
     }
 }
