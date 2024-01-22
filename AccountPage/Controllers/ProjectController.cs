@@ -20,7 +20,7 @@ namespace AccountPage.Controllers
         public async Task<ActionResult<List<ProjectViewModel>>> GetAllProjectsFromUser(string userId)
         {
             List<ProjectModel> projectDTOs = await _projectManager.GetAllProjectsFromUser(userId);
-            List<ProjectViewModel> project = projectDTOs.Select(x => new ProjectViewModel() { Id = x.Id, Description = x.Description, Name = x.Name, Img = x.Img }).ToList();
+            List<ProjectViewModel> project = projectDTOs.Select(x => new ProjectViewModel() { Id = x.Id, UserId = x.UserId, Description = x.Description, Name = x.Name, Img = x.Img }).ToList();
 
             return project;
         }
